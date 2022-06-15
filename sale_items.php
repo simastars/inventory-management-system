@@ -59,7 +59,6 @@ if (isset($_POST['add_sale'])) {
   </div>
 </div>
 <div class="row">
-
   <div class="col-md-12">
     <div class="panel panel-default">
       <div class="panel-heading clearfix">
@@ -71,32 +70,29 @@ if (isset($_POST['add_sale'])) {
       </div>
       <div class="panel-body">
         <form method="post" action="" id="form">
-          <table class="table table-bordered">
-            <thead>
-              <th> Item </th>
-              <th> Price </th>
-              <th> Qty </th>
-              <th> Total </th>
-              <th> Date</th>
-              <th> Action</th>
-            </thead>
+          <table class="table table-bordered" id="product_table">
+              <tr>
+                <th> Item </th>
+                <th> Price </th>
+                <th> Qty </th>
+                <th> Total </th>
+                <th> Date</th>
+                <th> Action</th>
+              </tr>
             <tbody id="product_info"> </tbody>
-            <tfoot id="footer"></tfoot>
+            <tfoot id="footer"><br><br/></tfoot>
           </table>
         </form>
       </div>
     </div>
   </div>
-
 </div>
 
 <?php include_once('layouts/footer.php'); ?>
-
 <script>
   $(document).on("blur", "#quantity", function(e) {
     let name = $(".name").val()
     let m = Number($(this).val())
-
 
     $.ajax({
       url: "checkPQty.php",
@@ -105,16 +101,14 @@ if (isset($_POST['add_sale'])) {
       data: {
         name: name
       },
-      beforeSend: () => {
-
-      },
+      beforeSend: () => {},
       success: function(data) {
         data = Number(data)
         console.log("data " + data)
         if (data >= m) {
           $("#addsale").removeAttr("disabled")
           $("#msg").html("")
-          $("#footer").html("<input type='submit' id='addsale' name=\"add_sale\" class=\"btn btn-primary\" value='Add sale'>")
+          $("#footer").append("<input type='submit' id='addsale' name=\"add_sale\" class=\"btn btn-primary\" value='Add sale'>")
         } else {
           $("#addsale").attr("disabled", "disbaled")
           $("#msg").html("Quantity sold is greter than the available stocks")
@@ -124,9 +118,8 @@ if (isset($_POST['add_sale'])) {
         console.error(err)
       }
     })
-
-
   })
+
   $(document).on("submit", "#form", function(e) {
     e.preventDefault();
     let error = '';
@@ -176,7 +169,8 @@ if (isset($_POST['add_sale'])) {
         data: formData,
         success: function(data) {
           if (data == 'ok') {
-            $("#product_info").find("tr:gt(0)").remove()
+            $("#product_table").find("tr:gt(0)").remove();
+            $("#addsale").remove()
             $("#error").html('<div class="alert alert-success">Sales Details Saved</div>')
           } else {
             console.log(data)
@@ -188,6 +182,7 @@ if (isset($_POST['add_sale'])) {
     }
 
   })
+
   $(document).on("click", ".add_more", function() {
     $.ajax({
       url: "getProduct.php",
@@ -202,7 +197,6 @@ if (isset($_POST['add_sale'])) {
   $(document).on("change", ".name", function(e) {
     e.preventDefault();
     let name = $(this).val();
-    // console.log(value)
     const that = this;
     $.ajax({
       url: "fillFields.php",
@@ -212,9 +206,6 @@ if (isset($_POST['add_sale'])) {
         name: name
       },
       success: function(data) {
-        // alert(data)
-        // let val = JSON.stringify(data)
-        // console.log(data.quantity)
         $(that)
           .closest('tr')
           .find('input[id=price]').val(data.sale_price);
@@ -224,11 +215,8 @@ if (isset($_POST['add_sale'])) {
         $(that)
           .closest('tr')
           .find('input[id=itemId]').val(data.id);
-        // $(that).parents().find('input[id=price]').val("yes");
-
       }
     })
-
   })
 
   $(document).on("click", ".remove", function() {
@@ -244,10 +232,10 @@ if (isset($_POST['add_sale'])) {
     var qty = $(that)
       .closest('tr')
       .find('input[id=quantity]').val() || 0;
-      alert(price)
-    // var price = $(this).val() || 0;
-    // var qty = $(this).val() || 0;
+
     var total = qty * price;
-    $('input[id=total]').val(total.toFixed(2));
+    $(that)
+      .closest('tr')
+      .find('input[id=total]').val(total.toFixed(2));
   });
 </script>

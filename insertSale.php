@@ -9,6 +9,12 @@ function update_product_qty($qty,$p_id,$conn){
     // return($conn->affected_rows() === 1 ? true : false);
 
   }
+  function add_receipt_details($sid, $bname, $bphone, $date, $conn){
+    $bname =  $bname;
+    $bphone  = $bphone;
+    $sql = "INSERT INTO receipts(saleId, buyerName, buyerPhone, date) VALUES('$sid','$bname','$bphone','$date')";
+    $result = $conn->query($sql);
+  }
 if (isset($_POST['item_name'])) {
     $result = 0;
     for ($count = 0; $count < count($_POST['item_name']); $count++) {
