@@ -10,12 +10,13 @@ function update_product_qty($qty,$p_id,$conn){
 
   }
   function add_receipt_details($sid, $bname, $bphone, $date, $conn){
-    $bname =  $bname;
-    $bphone  = $bphone;
-    $sql = "INSERT INTO receipts(saleId, buyerName, buyerPhone, date) VALUES('$sid','$bname','$bphone','$date')";
+    $sql = "INSERT INTO receipts(saleId, buyerName, buyerPhone, date) VALUES($sid,'$bname','$bphone','$date')";
     $result = $conn->query($sql);
+    
   }
 if (isset($_POST['item_name'])) {
+    $bname = $_POST['bname'];
+    $bphone = $_POST['bphone'];
     $result = 0;
     for ($count = 0; $count < count($_POST['item_name']); $count++) {
         $sql = "INSERT INTO sales(product_id, qty,price,date) VALUES(?,?,?,?)";
@@ -29,10 +30,15 @@ if (isset($_POST['item_name'])) {
             $_POST['date'][$count]
         );
         $stmt->execute();
+        $i_id = mysqli_insert_id($mysqli);
+        $date = $_POST['date'][$count];
+        add_receipt_details($i_id, $bname, $bphone, $date, $mysqli);
+     
         $result = $stmt->store_result();
         $qty = $_POST['item_qty'][$count];
         $p_id = $_POST['item_id'][$count];
         update_product_qty($qty,$p_id, $mysqli);
+        
         
         
     }

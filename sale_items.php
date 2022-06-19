@@ -46,13 +46,14 @@ if (isset($_POST['add_sale'])) {
     <form method="post" action="ajax.php" autocomplete="off" id="sug-form">
       <div class="form-group">
         <div class="input-group">
-          <span class="input-group-btn">
+          <!-- <span class="input-group-btn">
             <button type="submit" class="btn btn-primary">Find It</button>
           </span>
-          <input type="text" id="sug_input" class="form-control" name="title" placeholder="Search for product name">
+          <input type="text" id="sug_input" class="form-control" name="title" placeholder="Search for product name"> -->
         </div>
         <div id="result" class="list-group"></div>
         <div id="msg" class="text-danger" role="alert"></div>
+        <div id="receipt"></div>
         <span id="error"></span>
       </div>
     </form>
@@ -64,12 +65,14 @@ if (isset($_POST['add_sale'])) {
       <div class="panel-heading clearfix">
         <strong>
           <span class="glyphicon glyphicon-th"></span>
-          <span>Sale Eidt</span>
+          <span>Sale Edit</span>
         </strong>
         <button class="btn btn-success btn-sm add_more"><span class="glyphicon glyphicon-plus"></span></button>
       </div>
       <div class="panel-body">
         <form method="post" action="" id="form">
+          <label >Buyer Name:<input type="text" name="bname" class="form-control bname" placeholder="Name"/></label>
+          <label >Buyer Phone No:<input type="text" name="bphone" class="form-control bphone" placeholder="Phone Number"/></label>
           <table class="table table-bordered" id="product_table">
               <tr>
                 <th> Item </th>
@@ -104,11 +107,11 @@ if (isset($_POST['add_sale'])) {
       beforeSend: () => {},
       success: function(data) {
         data = Number(data)
-        console.log("data " + data)
+        // console.log("data " + data)
         if (data >= m) {
           $("#addsale").removeAttr("disabled")
           $("#msg").html("")
-          $("#footer").append("<input type='submit' id='addsale' name=\"add_sale\" class=\"btn btn-primary\" value='Add sale'>")
+          $("#footer").html("<input type='submit' id='addsale' name=\"add_sale\" class=\"btn btn-primary\" value='Add sale'>")
         } else {
           $("#addsale").attr("disabled", "disbaled")
           $("#msg").html("Quantity sold is greter than the available stocks")
@@ -123,6 +126,14 @@ if (isset($_POST['add_sale'])) {
   $(document).on("submit", "#form", function(e) {
     e.preventDefault();
     let error = '';
+    let bname = $(".bname").val();
+    let bphone = $(".bphone").val();
+    if(bname == ''){
+      error +="Buyer name cannot be empty";
+    }
+    if(bphone == ''){
+      error +="Buyer phone cannot be empty";
+    }
     $(".name").each(function() {
       var count = 1;
       if ($(this).val() == '') {
@@ -172,6 +183,8 @@ if (isset($_POST['add_sale'])) {
             $("#product_table").find("tr:gt(0)").remove();
             $("#addsale").remove()
             $("#error").html('<div class="alert alert-success">Sales Details Saved</div>')
+            $("#receipt").html("<button class='btn btn-success'>Print Receipt</button>")
+            console.log(formData)
           } else {
             console.log(data)
           }
