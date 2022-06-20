@@ -46,15 +46,12 @@ if (isset($_POST['add_sale'])) {
     <form method="post" action="ajax.php" autocomplete="off" id="sug-form">
       <div class="form-group">
         <div class="input-group">
-          <!-- <span class="input-group-btn">
-            <button type="submit" class="btn btn-primary">Find It</button>
-          </span>
-          <input type="text" id="sug_input" class="form-control" name="title" placeholder="Search for product name"> -->
         </div>
         <div id="result" class="list-group"></div>
         <div id="msg" class="text-danger" role="alert"></div>
         <div id="receipt"></div>
         <span id="error"></span>
+        <div id="info"></div>
       </div>
     </form>
   </div>
@@ -71,19 +68,19 @@ if (isset($_POST['add_sale'])) {
       </div>
       <div class="panel-body">
         <form method="post" action="" id="form">
-          <label >Buyer Name:<input type="text" name="bname" class="form-control bname" placeholder="Name"/></label>
-          <label >Buyer Phone No:<input type="text" name="bphone" class="form-control bphone" placeholder="Phone Number"/></label>
+          <label>Buyer Name:<input type="text" name="bname" class="form-control bname" placeholder="Name" /></label>
+          <label>Buyer Phone No:<input type="text" name="bphone" class="form-control bphone" placeholder="Phone Number" /></label>
           <table class="table table-bordered" id="product_table">
-              <tr>
-                <th> Item </th>
-                <th> Price </th>
-                <th> Qty </th>
-                <th> Total </th>
-                <th> Date</th>
-                <th> Action</th>
-              </tr>
+            <tr>
+              <th> Item </th>
+              <th> Price </th>
+              <th> Qty </th>
+              <th> Total </th>
+              <th> Date</th>
+              <th> Action</th>
+            </tr>
             <tbody id="product_info"> </tbody>
-            <tfoot id="footer"><br><br/></tfoot>
+            <tfoot id="footer"><br><br /></tfoot>
           </table>
         </form>
       </div>
@@ -128,11 +125,11 @@ if (isset($_POST['add_sale'])) {
     let error = '';
     let bname = $(".bname").val();
     let bphone = $(".bphone").val();
-    if(bname == ''){
-      error +="Buyer name cannot be empty";
+    if (bname == '') {
+      error += "Buyer name cannot be empty";
     }
-    if(bphone == ''){
-      error +="Buyer phone cannot be empty";
+    if (bphone == '') {
+      error += "Buyer phone cannot be empty";
     }
     $(".name").each(function() {
       var count = 1;
@@ -170,10 +167,13 @@ if (isset($_POST['add_sale'])) {
       count = count + 1;
     })
 
-    var formData = $(this).serialize();
-
+    var formData = $(this).serializeArray();
+    
+    $("#info").html('<input type="hidden" id="name" value="'+formData[0]['value']+'">');
+    $("#info").append('<input type="hidden" id="phone" value="'+formData[1]['value']+'">');
+    $("#info").append('<input type="hidden" id="date" value="'+formData[7]['value']+'">');
     if (error == '') {
-      // console.log(formData)
+      console.log(formData)
       $.ajax({
         url: "insertSale.php",
         method: "POST",
@@ -183,7 +183,7 @@ if (isset($_POST['add_sale'])) {
             $("#product_table").find("tr:gt(0)").remove();
             $("#addsale").remove()
             $("#error").html('<div class="alert alert-success">Sales Details Saved</div>')
-            $("#receipt").html("<button class='btn btn-success'>Print Receipt</button>")
+            $("#receipt").html("<button class='btn btn-success print'>Print Receipt</button>")
             console.log(formData)
           } else {
             console.log(data)
@@ -195,7 +195,29 @@ if (isset($_POST['add_sale'])) {
     }
 
   })
-
+  $(document).on("click", ".print", function(){
+    let phone = $("#phone").val();
+    let name = $("#name").val();
+    let date = $("#date").val();
+    $.ajax({
+      url: "getReceipt.php",
+      method: "POST",
+      type: "text",
+      data:{phone:phone,date:date},
+      success: function(data) {
+        $("#receipt").append(data)
+        var divContent = document.getElementById("receipt").innerHTML
+        var oriContent = document.body.innerHTML
+        document.body.style.width="150px"
+        document.body.innerHTML = divContent
+        window.print()
+        document.body.style.width="100%"
+        document.body.innerHTML = oriContent
+        $("#receipt").html("")
+      }
+    })
+    
+  })
   $(document).on("click", ".add_more", function() {
     $.ajax({
       url: "getProduct.php",

@@ -7,7 +7,7 @@
            echo remove_junk($page_title);
             elseif(!empty($user))
            echo ucfirst($user['name']);
-            else echo "Simple inventory System";?>
+            else echo "DORAWA VENTURES";?>
     </title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css"/>
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.3.0/css/datepicker3.min.css" />
@@ -25,7 +25,7 @@
         <ul class="info-menu list-inline list-unstyled">
           <li class="profile">
             <a href="#" data-toggle="dropdown" class="toggle" aria-expanded="false">
-              <img src="uploads/users/<?php echo $user['image'];?>" alt="user-image" class="img-circle img-inline">
+              <img src="uploads/products/no_image.jpg" alt="user-image" class="img-circle img-inline">
               <span><?php echo remove_junk(ucfirst($user['name'])); ?> <i class="caret"></i></span>
             </a>
             <ul class="dropdown-menu">

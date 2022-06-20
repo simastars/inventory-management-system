@@ -42,7 +42,7 @@ function fill_product_details($conn)
         //   $html  .= "</td>";
         //   $html  .= "</tr>";
         } else {
-            $html .= "No rows";
+            $html .= "<h2>There is no stocks available</h2>";
         }
     } else {
         $html .= $conn->error;
