@@ -2,15 +2,23 @@
 require_once("./includes/conn.php");
 if (isset($_POST['phone'])) {
 
-$phone = $_POST['phone'];
-$date = $_POST['date'];
-
-$receipt = '';
-function get_receipt($conn, $bname, $bphone, $beginDate, $endDate, $receipt)
-{
-  $receipt .= '<div class="row" style="width: 40%;">
-        <h4 style="display: inline-block;">Buyer Name: </h4><span>'.$bname.'</span>
-        <h4 style="display: inline-block;">Phone Number:</h4><span>'.$bphone.'</span>
+  $phone = mysqli_real_escape_string($mysqli,$_POST['phone']);
+  $start_date = mysqli_real_escape_string($mysqli,$_POST['from']);
+  $end_date = mysqli_real_escape_string($mysqli,$_POST['to']);
+ 
+  $receipt = '';
+  function get_receipt($conn, $phone, $start_date, $end_date, $receipt)
+  {
+    // $sql = "SELECT * FROM sales,receipts,products WHERE receipts.saleId=sales.id AND (receipts.buyerPhone='$bphone' AND receipts.date='$date')";
+    $sql = "SELECT * FROM sales,receipts,products WHERE (receipts.saleId=sales.id AND products.id=sales.product_id) AND (receipts.buyerPhone='$phone' AND receipts.date BETWEEN '$start_date' AND '$end_date')
+  ";
+    $result = $conn->query($sql);
+    if ($result) {
+      $num_rows = $result->num_rows;
+      $row = $result->fetch_assoc();
+      $receipt .= '<div>
+        <h4 style="display: inline-block;">Buyer Name: </h4><span>' . $row["buyerName"] . '</span>
+        <h4 style="display: inline-block;">Phone Number:</h4><span>' . $row["buyerPhone"] . '</span>
     
         <table class="table table-stripped table-bordered"> 
           <thead>
@@ -21,61 +29,52 @@ function get_receipt($conn, $bname, $bphone, $beginDate, $endDate, $receipt)
             </div>
           </thead>
           <tbody>';
-
-  // $sql = "SELECT * FROM sales,receipts,products WHERE receipts.saleId=sales.id AND (receipts.buyerPhone='$bphone' AND receipts.date='$date')";
-  $sql = "SELECT * FROM sales,receipts,products WHERE (receipts.saleId=sales.id AND products.id=sales.product_id) AND (receipts.buyerPhone='$bphone' AND receipts.date BETWEEN '$beginDate' AND '$endDate')
-  ";
-  $result = $conn->query($sql);
-  if ($result) {
-    $num_rows = $result->num_rows;
-    if ($num_rows > 0) {
-      // $res = $result->fetch_all();
-      // var_dump($res);
-      for ($i = 0; $i < $num_rows; $i++) {
-        $row = $result->fetch_assoc();
-        $receipt .= '
+      if ($num_rows > 0) {
+        // $res = $result->fetch_all();
+        // var_dump($res);
+        for ($i = 0; $i < $num_rows; $i++) {
+          $row = $result->fetch_assoc();
+          $receipt .= '
                 <tr>
                   <td>' . $row["name"] . '</td>
                   <td class="qty">' . $row["qty"] . '</td>
                   <td class="price">' . $row["price"] . '</td>
                 </tr>';
+        }
+        echo $receipt;
+      } else {
+        echo "no products found";
       }
-      echo $receipt;
     } else {
-      echo "no products found";
+      echo $conn->error;
     }
-  } else {
-    echo $conn->error;
   }
-}
-function get_total($conn, $bname, $bphone, $beginDate, $endDate, $receipt)
-{
-  $sql = "SELECT *, SUM(sales.qty*sales.price) AS total_sales FROM sales,receipts,products WHERE (receipts.saleId=sales.id AND products.id=sales.product_id) AND (receipts.buyerPhone='$bphone' AND receipts.date BETWEEN '$beginDate' AND '$endDate')";
-  // $sql = "SELECT s.id,s.qty,s.price,r.saleId,r.buyerPhone,r.date,p.name FROM sales s LEFT JOIN receipts r ON r.saleId=s.id RIGHT JOIN products p ON p.id=s.product_id WHERE r.date='2022-06-13' AND r.buyerPhone='141'";
-  $result = $conn->query($sql);
-  if ($result) {
-    $num_rows = $result->num_rows;
-    if ($num_rows > 0) {
-      $row = $result->fetch_assoc();
-      $receipt .= '</tbody>
-  <tfoot>
-    <tr>
-      <td colspan="2"><strong>Total</strong></td>
-      <td><strong>' . $row["total"] . '</strong></td>
-    </tr>
-  </tfoot>
-</table>
-</div>';
-    }else{
-      echo "no rows";
+  function get_total($conn, $phone, $start_date, $end_date, $receipt)
+  {
+    $sql = "SELECT *, SUM(sales.qty*sales.price) AS total FROM sales,receipts,products WHERE (receipts.saleId=sales.id AND products.id=sales.product_id) AND (receipts.buyerPhone='$phone' AND receipts.date BETWEEN '$start_date' AND '$end_date')";
+    // $sql = "SELECT s.id,s.qty,s.price,r.saleId,r.buyerPhone,r.date,p.name FROM sales s LEFT JOIN receipts r ON r.saleId=s.id RIGHT JOIN products p ON p.id=s.product_id WHERE r.date='2022-06-13' AND r.buyerPhone='141'";
+    $result = $conn->query($sql);
+    if ($result) {
+      $num_rows = $result->num_rows;
+      if ($num_rows > 0) {
+        $row = $result->fetch_assoc();
+        $receipt .= '</tbody>
+                      <tfoot>
+                        <tr>
+                          <td colspan="2"><strong>Total</strong></td>
+                          <td><strong>' . $row["total"] . '</strong></td>
+                        </tr>
+                      </tfoot>
+                    </table>
+                    </div>';
+        echo $receipt;
+      } else {
+        echo "no rows";
+      }
+    } else {
+      echo $conn->error;
     }
-  }else{
-    echo $conn->error;
   }
-  
-  echo $receipt;
-  
-}
-get_receipt($mysqli, $bname, $bphone, $beginDate, $endDate, $receipt);
-get_total($mysqli, $bname, $bphone, $beginDate, $endDate, $receipt);
+  get_receipt($mysqli, $phone, $start_date, $end_date, $receipt);
+  get_total($mysqli, $phone, $start_date, $end_date, $receipt);
 }

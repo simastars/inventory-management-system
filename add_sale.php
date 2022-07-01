@@ -1,6 +1,7 @@
 <?php
 $page_title = 'Add Sale';
 require_once('includes/load.php');
+require_once('./includes/conn.php');
 // Checkin What level user has permission to view this page
 page_require_level(3);
 ?>
@@ -36,6 +37,7 @@ if (isset($_POST['add_sale'])) {
   }
 }
 
+
 ?>
 <?php include_once('layouts/header.php'); ?>
 <div class="row">
@@ -44,58 +46,54 @@ if (isset($_POST['add_sale'])) {
     <form method="post" action="ajax.php" autocomplete="off" id="sug-form">
       <div class="form-group">
         <div class="input-group">
-          <span class="input-group-btn">
-            <button type="submit" class="btn btn-primary">Find It</button>
-          </span>
-          <input type="text" id="sug_input" class="form-control" name="title" placeholder="Search for product name">
         </div>
         <div id="result" class="list-group"></div>
         <div id="msg" class="text-danger" role="alert"></div>
-
+        <div id="receipt"></div>
+        <span id="error"></span>
+        <div id="info"></div>
       </div>
     </form>
   </div>
 </div>
 <div class="row">
-
   <div class="col-md-12">
     <div class="panel panel-default">
       <div class="panel-heading clearfix">
         <strong>
           <span class="glyphicon glyphicon-th"></span>
-          <span>Sale Eidt</span>
+          <span>Sale Edit</span>
         </strong>
-        <button class="btn btn-success">Add More</button>
+        <button class="btn btn-success btn-sm add_more"><span class="glyphicon glyphicon-plus"></span></button>
       </div>
       <div class="panel-body">
-        <form method="post" action="add_sale.php">
-          <table class="table table-bordered">
-            <thead>
+        <form method="post" action="" id="form">
+          <label>Buyer Name:<input type="text" name="bname" class="form-control bname" placeholder="Name" /></label>
+          <label>Buyer Phone No:<input type="text" name="bphone" class="form-control bphone" placeholder="Phone Number" /></label>
+          <table class="table table-bordered" id="product_table">
+            <tr>
               <th> Item </th>
               <th> Price </th>
               <th> Qty </th>
               <th> Total </th>
               <th> Date</th>
               <th> Action</th>
-            </thead>
+            </tr>
             <tbody id="product_info"> </tbody>
+            <tfoot id="footer"><br><br /></tfoot>
           </table>
         </form>
       </div>
     </div>
   </div>
-
 </div>
 
 <?php include_once('layouts/footer.php'); ?>
-
 <script>
   $(document).on("blur", "#quantity", function(e) {
-    // let qty = e.target.value;
-    let name = e.target.getAttribute("data-name")
-    // let qauntity = e.target.getAttribute("data-qty")
+    let name = $(".name").val()
     let m = Number($(this).val())
-  
+
     $.ajax({
       url: "checkPQty.php",
       type: "text",
@@ -103,15 +101,15 @@ if (isset($_POST['add_sale'])) {
       data: {
         name: name
       },
-      beforeSend: () => {
-
-      },
+      beforeSend: () => {},
       success: function(data) {
         data = Number(data)
-        if(data>=m){
+        // console.log("data " + data)
+        if (data >= m) {
           $("#addsale").removeAttr("disabled")
           $("#msg").html("")
-        }else{
+          $("#footer").html("<input type='submit' id='addsale' name=\"add_sale\" class=\"btn btn-primary\" value='Add sale'>")
+        } else {
           $("#addsale").attr("disabled", "disbaled")
           $("#msg").html("Quantity sold is greter than the available stocks")
         }
@@ -120,7 +118,156 @@ if (isset($_POST['add_sale'])) {
         console.error(err)
       }
     })
+  })
 
+  $(document).on("submit", "#form", function(e) {
+    e.preventDefault();
+    let error = '';
+    let bname = $(".bname").val();
+    let bphone = $(".bphone").val();
+    if (bname == '') {
+      error += "Buyer name cannot be empty";
+    }
+    if (bphone == '') {
+      error += "Buyer phone cannot be empty";
+    }
+    $(".name").each(function() {
+      var count = 1;
+      if ($(this).val() == '') {
+        error += "<p>Enter Item Name at " + count + " Row";
+        return false;
+      }
+      count = count + 1;
+    })
+
+    $(".qty").each(function() {
+      let count = 1;
+      if ($(this).val() == '') {
+        error += "<p>Enter Units at " + count + " Row";
+        return false;
+      }
+      count = count + 1;
+    })
+
+    $(".price").each(function() {
+      let count = 1;
+      if ($(this).val() == '') {
+        error += "<p>Enter Item Price at " + count + " Row";
+        return false;
+      }
+      count = count + 1;
+    })
+
+    $(".date").each(function() {
+      let count = 1;
+      if ($(this).val() == '') {
+        error += "<p>Enter Date at " + count + " Row";
+        return false;
+      }
+      count = count + 1;
+    })
+
+    var formData = $(this).serializeArray();
+    
+    $("#info").html('<input type="hidden" id="name" value="'+formData[0]['value']+'">');
+    $("#info").append('<input type="hidden" id="phone" value="'+formData[1]['value']+'">');
+    $("#info").append('<input type="hidden" id="date" value="'+formData[7]['value']+'">');
+    if (error == '') {
+      $.ajax({
+        url: "insertSale.php",
+        method: "POST",
+        data: formData,
+        success: function(data) {
+          if (data == 'ok') {
+            $("#product_table").find("tr:gt(0)").remove();
+            $("#addsale").remove()
+            $("#error").html('<div class="alert alert-success">Sales Details Saved</div>')
+            $("#receipt").html("<button class='btn btn-success print'>Print Receipt</button>")
+          } else {
+            console.log(data)
+          }
+        }
+      })
+    } else {
+      $("#error").html('<div class="alert alert-danger">' + error + '</div>')
+    }
 
   })
+  $(document).on("click", ".print", function(){
+    let phone = $("#phone").val();
+    let name = $("#name").val();
+    let date = $("#date").val();
+    $.ajax({
+      url: "getReceipt.php",
+      method: "POST",
+      type: "text",
+      data:{name:name,phone:phone,date:date},
+      success: function(data) {
+        $("#receipt").append(data)
+        console.log(data)
+        var divContent = document.getElementById("receipt").innerHTML
+        var oriContent = document.body.innerHTML
+        document.body.innerHTML = divContent
+        window.print()
+        document.body.innerHTML = oriContent
+        $("#receipt").html("")
+      }
+    })
+    
+  })
+  $(document).on("click", ".add_more", function() {
+    $.ajax({
+      url: "getProduct.php",
+      method: "POST",
+      type: "text",
+      success: function(data) {
+        $("#product_info").append(data)
+      }
+    })
+  })
+
+  $(document).on("change", ".name", function(e) {
+    e.preventDefault();
+    let name = $(this).val();
+    const that = this;
+    $.ajax({
+      url: "fillFields.php",
+      method: "POST",
+      dataType: "json",
+      data: {
+        name: name
+      },
+      success: function(data) {
+        $(that)
+          .closest('tr')
+          .find('input[id=price]').val(data.sale_price);
+        $(that)
+          .closest('tr')
+          .find('input[id=total]').val(data.sale_price);
+        $(that)
+          .closest('tr')
+          .find('input[id=itemId]').val(data.id);
+      }
+    })
+  })
+
+  $(document).on("click", ".remove", function() {
+    $(this).closest("tr").remove();
+  })
+
+
+  $(document).on("blur", '#quantity', function(e) {
+    const that = this;
+    var price = $(that)
+      .closest('tr')
+      .find('input[id=price]').val() || 0;
+    var qty = $(that)
+      .closest('tr')
+      .find('input[id=quantity]').val() || 0;
+
+    var total = qty * price;
+    $(that)
+      .closest('tr')
+      .find('input[id=total]').val(total.toFixed(2));
+  });
 </script>

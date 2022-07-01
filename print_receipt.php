@@ -12,17 +12,17 @@ $page_title = 'Sale Report';
 </div>
 <div class="row">
   <div class="col-md-6">
-      <div id="receipt"></div>
+     <div id="receipt" class="table table-bordered"></div>
     <div class="panel">
       <div class="panel-heading">
 
       </div>
-      <div class="panel-body">
-          <form class="clearfix" method="post" action="">
+      <div class="panel-body"> 
+          <form class="clearfix" method="post" action="" autocomplete="off">
           <div class="form-group">
               <label class="form-label">Phone Number</label>
                 <div class="input-group">
-                  <input type="text" class="form-control" name="phone" placeholder="Phone Number" id="bphone">
+                  <input type="text" class="form-control" name="phone" placeholder="Phone Number" id="phone">
                 </div>
             </div>  
           <div class="form-group">
@@ -34,7 +34,7 @@ $page_title = 'Sale Report';
                 </div>
             </div>
             <div class="form-group">
-                 <button type="submit" name="submit" class="btn btn-primary" id="print">Print Receipt</button>
+                 <button name="submit" class="btn btn-primary" id="print">Print Receipt</button>
             </div>
           </form>
       </div>
@@ -45,10 +45,12 @@ $page_title = 'Sale Report';
 </div>
 <?php include_once('layouts/footer.php'); ?>
 <script>
-    $(document).on("click", "#print", function(){
-    let phone = $("#bphone").val();
+    $(document).on("click", "#print", function(e){
+      e.preventDefault();
+    let phone = $("#phone").val();
     let from = $("#fromDate").val();
     let to = $("#toDate").val();
+    console.log(phone+" "+from)
     $.ajax({
       url: "getReceiptByDate.php",
       method: "POST",
@@ -59,10 +61,8 @@ $page_title = 'Sale Report';
         console.log(data)
         var divContent = document.getElementById("receipt").innerHTML
         var oriContent = document.body.innerHTML
-        document.body.style.width="150px"
         document.body.innerHTML = divContent
         window.print()
-        document.body.style.width="100%"
         document.body.innerHTML = oriContent
         $("#receipt").html("")
       }
