@@ -1,12 +1,12 @@
 <?php
 require_once("./includes/conn.php");
 if (isset($_POST['phone'])) {
-$bname = $_POST['name'];
+
 $phone = $_POST['phone'];
 $date = $_POST['date'];
 
 $receipt = '';
-function get_receipt($conn, $bname, $bphone, $date, $receipt)
+function get_receipt($conn, $bname, $bphone, $beginDate, $endDate, $receipt)
 {
   $receipt .= '<div class="row" style="width: 40%;">
         <h4 style="display: inline-block;">Buyer Name: </h4><span>'.$bname.'</span>
@@ -23,7 +23,8 @@ function get_receipt($conn, $bname, $bphone, $date, $receipt)
           <tbody>';
 
   // $sql = "SELECT * FROM sales,receipts,products WHERE receipts.saleId=sales.id AND (receipts.buyerPhone='$bphone' AND receipts.date='$date')";
-  $sql = "SELECT s.id,s.qty,s.price,r.saleId,r.buyerPhone,r.date,p.name FROM sales s LEFT JOIN receipts r ON r.saleId=s.id RIGHT JOIN products p ON p.id=s.product_id WHERE r.date='$date' AND r.buyerPhone='$bphone'";
+  $sql = "SELECT * FROM sales,receipts,products WHERE (receipts.saleId=sales.id AND products.id=sales.product_id) AND (receipts.buyerPhone='$bphone' AND receipts.date BETWEEN '$beginDate' AND '$endDate')
+  ";
   $result = $conn->query($sql);
   if ($result) {
     $num_rows = $result->num_rows;
@@ -47,9 +48,9 @@ function get_receipt($conn, $bname, $bphone, $date, $receipt)
     echo $conn->error;
   }
 }
-function get_total($conn, $bphone, $date, $receipt)
+function get_total($conn, $bname, $bphone, $beginDate, $endDate, $receipt)
 {
-  $sql = "SELECT *, SUM(sales.qty*sales.price) AS total FROM sales LEFT JOIN receipts ON sales.id=receipts.saleId WHERE receipts.buyerPhone='$bphone' AND receipts.date='$date'";
+  $sql = "SELECT *, SUM(sales.qty*sales.price) AS total_sales FROM sales,receipts,products WHERE (receipts.saleId=sales.id AND products.id=sales.product_id) AND (receipts.buyerPhone='$bphone' AND receipts.date BETWEEN '$beginDate' AND '$endDate')";
   // $sql = "SELECT s.id,s.qty,s.price,r.saleId,r.buyerPhone,r.date,p.name FROM sales s LEFT JOIN receipts r ON r.saleId=s.id RIGHT JOIN products p ON p.id=s.product_id WHERE r.date='2022-06-13' AND r.buyerPhone='141'";
   $result = $conn->query($sql);
   if ($result) {
@@ -75,8 +76,6 @@ function get_total($conn, $bphone, $date, $receipt)
   echo $receipt;
   
 }
-get_receipt($mysqli, $bname, $bphone, $date, $receipt);
-get_total($mysqli, $bphone, $date, $receipt);
-}else{
-echo "no data";
+get_receipt($mysqli, $bname, $bphone, $beginDate, $endDate, $receipt);
+get_total($mysqli, $bname, $bphone, $beginDate, $endDate, $receipt);
 }

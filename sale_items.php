@@ -203,9 +203,10 @@ if (isset($_POST['add_sale'])) {
       url: "getReceipt.php",
       method: "POST",
       type: "text",
-      data:{phone:phone,date:date},
+      data:{name:name,phone:phone,date:date},
       success: function(data) {
         $("#receipt").append(data)
+        console.log(data)
         var divContent = document.getElementById("receipt").innerHTML
         var oriContent = document.body.innerHTML
         document.body.style.width="150px"

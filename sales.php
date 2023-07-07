@@ -16,6 +16,7 @@ $sales = find_all_sale();
   <div class="row">
     <div class="col-md-12">
       <div class="panel panel-default">
+        <a href="./print_receipt.php" class="btn btn-success">Print Receipt</a>
         <div class="panel-heading clearfix">
           <strong>
             <span class="glyphicon glyphicon-th"></span>

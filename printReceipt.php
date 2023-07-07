@@ -105,7 +105,7 @@ if (isset($_POST['submit'])) {
 
 <body>
   <?php if ($results) : ?>
-    <div class="page-break content">
+    <div class="page-break content" id="content">
       <div class="sale-head pull-right">
         <h1>Sales Report</h1>
         <strong><?php if (isset($start_date)) {
