@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Jul 07, 2023 at 10:06 PM
+-- Generation Time: Jul 17, 2022 at 06:06 PM
 -- Server version: 10.4.21-MariaDB
 -- PHP Version: 8.0.10
 
@@ -32,6 +32,15 @@ CREATE TABLE `categories` (
   `name` varchar(60) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+--
+-- Dumping data for table `categories`
+--
+
+INSERT INTO `categories` (`id`, `name`) VALUES
+(4, 'bottles'),
+(5, 'rubber'),
+(7, 'Textile');
+
 -- --------------------------------------------------------
 
 --
@@ -50,7 +59,10 @@ CREATE TABLE `media` (
 
 INSERT INTO `media` (`id`, `file_name`, `file_type`) VALUES
 (1, 'trust.jpg', 'image/jpeg'),
-(2, 'index2.jpeg', 'image/jpeg');
+(2, 'index2.jpeg', 'image/jpeg'),
+(3, 'logo-black.png', 'image/png'),
+(4, 'black-solid-icon-boy-patient-boy-patient-logo-pills-medical-black-solid-icon-boy-patient-pills-medical-147675883.jpg', 'image/jpeg'),
+(6, '6430688_preview.png', 'image/png');
 
 -- --------------------------------------------------------
 
@@ -69,6 +81,16 @@ CREATE TABLE `products` (
   `date` datetime NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+--
+-- Dumping data for table `products`
+--
+
+INSERT INTO `products` (`id`, `name`, `quantity`, `buy_price`, `sale_price`, `categorie_id`, `media_id`, `date`) VALUES
+(1, 'fanta', '13', '90.00', '120.00', 4, 1, '2022-06-22 17:21:51'),
+(2, 'coca cola', '10', '100.00', '130.00', 4, 2, '2022-06-22 17:22:31'),
+(4, 'Bio Clear 1', '93', '1000.00', '1500.00', 7, 4, '2022-07-06 16:41:12'),
+(5, 'Rufaida Youghut', '5', '600.00', '900.00', 5, 2, '2022-07-08 15:23:02');
+
 -- --------------------------------------------------------
 
 --
@@ -83,6 +105,37 @@ CREATE TABLE `receipts` (
   `date` varchar(10) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+--
+-- Dumping data for table `receipts`
+--
+
+INSERT INTO `receipts` (`id`, `saleId`, `buyerName`, `buyerPhone`, `date`) VALUES
+(1, 1, 'muhammad', '08169895827', '2022-06-22'),
+(2, 2, 'muhammad', '08169895827', '2022-06-22'),
+(3, 3, 'muhammad', '08169895827', '2022-06-22'),
+(4, 4, 'idris', '07011922884', '2022-07-01'),
+(5, 5, 'idris', '07011922884', '2022-07-01'),
+(6, 6, 'idris', '07011922884', '2022-07-01'),
+(7, 7, 'iii', '123', '2022-07-01'),
+(8, 8, 'iii', '123', '2022-07-01'),
+(9, 9, 'bello', '1234', '2022-07-01'),
+(10, 10, 'bello', '1234', '2022-07-01'),
+(11, 11, 'idi', '444', '2022-07-01'),
+(12, 12, 'idi', '444', '2022-07-01'),
+(13, 13, 'q', '11', '2022-07-01'),
+(14, 14, 'q', '11', '2022-07-01'),
+(15, 15, 'a', '55', '2022-07-01'),
+(16, 16, 'a', '55', '2022-07-01'),
+(17, 17, 'muhammad', '08169895827', '2022-07-01'),
+(18, 18, 'muhammad', '07011922884', '2022-07-06'),
+(19, 19, 'muhammad', '07011922884', '2022-07-06'),
+(20, 20, 'muhammad', '08169895827', '2022-07-07'),
+(21, 21, 'muhammad', '08169895827', '2022-07-07'),
+(22, 22, 'idris', '08169895827', '2022-07-08'),
+(23, 23, 'idris', '08169895827', '2022-07-08'),
+(24, 24, 'okljuhydtxursy', '1122', '2022-07-17'),
+(25, 25, 'iii', '222', '2022-07-17');
+
 -- --------------------------------------------------------
 
 --
@@ -96,6 +149,34 @@ CREATE TABLE `sales` (
   `price` decimal(25,2) NOT NULL,
   `date` date NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Dumping data for table `sales`
+--
+
+INSERT INTO `sales` (`id`, `product_id`, `qty`, `price`, `date`) VALUES
+(1, 1, 2, '120.00', '2022-06-22'),
+(2, 2, 2, '130.00', '2022-06-22'),
+(4, 1, 10, '120.00', '2022-07-01'),
+(5, 2, 10, '130.00', '2022-07-01'),
+(7, 1, 3, '120.00', '2022-07-01'),
+(8, 2, 4, '130.00', '2022-07-01'),
+(10, 2, 4, '130.00', '2022-07-01'),
+(11, 1, 2, '120.00', '2022-07-01'),
+(12, 2, 2, '130.00', '2022-07-01'),
+(13, 1, 2, '120.00', '2022-07-01'),
+(14, 2, 1, '130.00', '2022-07-01'),
+(15, 1, 2, '120.00', '2022-07-01'),
+(16, 2, 2, '130.00', '2022-07-01'),
+(17, 1, 12, '120.00', '2022-07-01'),
+(18, 4, 20, '1400.00', '2022-07-06'),
+(19, 2, 15, '110.00', '2022-07-06'),
+(20, 4, 14, '1400.00', '2022-07-07'),
+(21, 1, 20, '120.00', '2022-07-07'),
+(22, 5, 15, '850.00', '2022-07-08'),
+(23, 1, 2, '120.00', '2022-07-08'),
+(24, 4, 3, '1500.00', '2022-07-17'),
+(25, 1, 2, '120.00', '2022-07-17');
 
 -- --------------------------------------------------------
 
@@ -119,9 +200,9 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `name`, `username`, `password`, `user_level`, `image`, `status`, `last_login`) VALUES
-(1, ' Admin User', 'admin', 'd033e22ae348aeb5660fc2140aec35850c4da997', 1, 'no_image.jpg', 1, '2022-06-21 21:27:55'),
-(2, 'Special User', 'special', 'ba36b97a41e7faf742ab09bf88405ac04f99599a', 2, 'no_image.jpg', 1, '2022-06-10 18:03:58'),
-(3, 'Default User', 'user', '12dea96fec20593566ab75692c9949596833adc9', 3, 'no_image.jpg', 1, '2022-06-10 18:04:34');
+(1, ' Admin User', 'admin', 'd033e22ae348aeb5660fc2140aec35850c4da997', 1, 'no_image.jpg', 1, '2022-07-17 17:27:30'),
+(2, 'Special User new', 'Special', '7c4a8d09ca3762af61e59520943dc26494f8941b', 2, 'no_image.jpg', 1, '2022-06-10 18:03:58'),
+(4, 'muhammed garba', 'star', '7c4a8d09ca3762af61e59520943dc26494f8941b', 3, 'no_image.jpg', 1, NULL);
 
 -- --------------------------------------------------------
 
@@ -143,7 +224,7 @@ CREATE TABLE `user_groups` (
 INSERT INTO `user_groups` (`id`, `group_name`, `group_level`, `group_status`) VALUES
 (1, 'Admin', 1, 1),
 (2, 'special', 2, 1),
-(3, 'User', 3, 1);
+(7, 'user', 3, 1);
 
 --
 -- Indexes for dumped tables
@@ -208,43 +289,43 @@ ALTER TABLE `user_groups`
 -- AUTO_INCREMENT for table `categories`
 --
 ALTER TABLE `categories`
-  MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT for table `media`
 --
 ALTER TABLE `media`
-  MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `products`
 --
 ALTER TABLE `products`
-  MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `receipts`
 --
 ALTER TABLE `receipts`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=26;
 
 --
 -- AUTO_INCREMENT for table `sales`
 --
 ALTER TABLE `sales`
-  MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=26;
 
 --
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `user_groups`
 --
 ALTER TABLE `user_groups`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- Constraints for dumped tables

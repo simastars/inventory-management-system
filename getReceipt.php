@@ -39,6 +39,7 @@ function get_receipt($conn, $bname, $phone, $date, $receipt)
                   <td class="price">' . $row["price"] . '</td>
                 </tr>';
       }
+      echo var_dump($row);
       echo $receipt;
     } else {
       echo "no products found";
